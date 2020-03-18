@@ -10,10 +10,9 @@
 #include "pq_sort.h"
 
 
-int compare_ints(Pointer a, Pointer b) {
+int compare_ints(Pointer a ,Pointer b)  {
 	return *(int*)a - *(int*)b;
 }
-
 int* create_int(int value) {
 	int* pointer = malloc(sizeof(int));	// δέσμευση μνήμης
 	*pointer = value;					// αντιγραφή του value στον νέο ακέραιο
@@ -22,7 +21,7 @@ int* create_int(int value) {
 
 
 void test_pq_sort_vector(void) {
-	Vector vec = vector_create(0, free);
+	Vector vec = vector_create(0,free);
 
 	// προσθήκη τυχαίων αριθμών
 	int N = 10;
@@ -44,8 +43,36 @@ void test_pq_sort_vector(void) {
 }
 
 void test_pq_sort_list(void) {
+	List list=list_create(free);
+	ListNode node=LIST_BOF;
+	int temp,N = 10;
+	for (int i = 0; i < N; i++)  {
+		list_insert_next(list,node,create_int(rand()));
+		if (i!=0)  {
+			node=list_next(list,node);
+		}
+		else  {
+			node=list_first(list);
+		}
 
+	}
+	// sort
+	pq_sort_list(list, compare_ints);
+
+	// έλεγχος ότι οι τιμές είναι σε αύξουσα σειρά
+	int last = INT_MIN;
+	for (int i = 0; i < N; i++) {
+		node=list_first(list);
+		temp=i;
+		while (temp-->0)  {
+			node=list_next(list,node);
+		}
+		int* current = list_node_value(list,node);
+		TEST_CHECK(last <= *current);			// Το στοιχείο πρέπει να είναι >= από το προηγούμενο
+		last = *current;
+	}
 	// προς υλοποίηση...
+	list_destroy(list);
 
 }
 

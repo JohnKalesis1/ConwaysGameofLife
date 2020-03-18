@@ -7,7 +7,7 @@ MODULES = ../modules
 CC = gcc
 
 # Compile options. Το -I<dir> λέει στον compiler να αναζητήσει εκεί include files
-CFLAGS = -Wall -Werror -g -I$(INCLUDE)
+CFLAGS =  -g -I$(INCLUDE)
 LDFLAGS = -lm
 
 # Αρχεία .o
