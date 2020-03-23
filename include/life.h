@@ -1,10 +1,10 @@
 #include "common_types.h"
-#include "ADTMap.h" 
+#include "ADTSet.h" 
 typedef struct {
     int x;
     int y;
 } LifeCell ;
-typedef Map LifeState;
+typedef Set LifeState;
 LifeState life_create();
 LifeState life_create_from_rle(char* file);
 void life_save_to_rle(LifeState state, char* file);

@@ -4,32 +4,28 @@
 #include <limits.h>
 int compare_structs(Pointer a,Pointer b)  {
     if (((LifeCell*) a)->x==((LifeCell*) b)->x)  {
-        if (((LifeCell*) a)->y==((LifeCell*) b)->y)  {
-            return 0;
-        }
-        else  {
-            return -1;
-        }
+        return ((LifeCell*) a)->y-((LifeCell*) b)->y;
     }
     else  {
-        return 1;
+        return ((LifeCell*) a)->x-((LifeCell*) b)->x;
     }
 }
-LifeCell* create_struct(LifeCell Cell)  {
+LifeCell* create_struct(int x,int y)  {
     LifeCell* Entity;
     Entity=malloc(sizeof(LifeCell));
-    Entity->x=Cell.x;
-    Entity->y=Cell.y;
+    Entity->x=x;
+    Entity->y=y;
     return Entity;
 }
 LifeState life_create()  {
-    LifeState Universe =map_create(compare_structs,free,free);
+    LifeState Universe =set_create(compare_structs,free);
     return Universe;
 }
 LifeState life_create_from_rle(char* file)  {
     FILE *fp;
     LifeState Universe=life_create();
     LifeCell Cell;
+    LifeCell* Entity;
     char ch;
     int x,y,temp;
     fp=fopen(file,"r");
@@ -48,7 +44,8 @@ LifeState life_create_from_rle(char* file)  {
                 Cell.x=x;
                 Cell.y=y;
                 printf("x %d ",x);
-                map_insert(Universe,create_struct(Cell),0);
+                Entity=create_struct(Cell.x,Cell.y);
+                set_insert(Universe,Entity);
                 x++;
             }
             temp=1;
@@ -72,17 +69,17 @@ LifeState life_create_from_rle(char* file)  {
 }
 void life_save_to_rle(LifeState Universe, char* file)  {
     FILE *fp;
-    MapNode Node;
+    SetNode Node;
     LifeCell Cell;
     int left,up,down,right,x,y,o_count,b_count;
-    //fp=fopen(file,"w");
+    fp=fopen(file,"w");
     left=INT_MAX;
     right=INT_MIN;
     down=INT_MAX;
     up=INT_MIN;
-    Node=map_first(Universe);
-    while (Node!=MAP_EOF)  {
-        Cell=*(LifeCell*) map_node_value(Universe,Node);
+    Node=set_first(Universe);
+    while (Node!=SET_EOF)  {
+        Cell=*(LifeCell*) set_node_value(Universe,Node);
         if (Cell.y<down )  {
             down=Cell.y; 
         }
@@ -95,10 +92,9 @@ void life_save_to_rle(LifeState Universe, char* file)  {
         if (Cell.x<left)  {
             left=Cell.x;
         }
-        Node=map_next(Universe,Node);
+        Node=set_next(Universe,Node);
     }
-    printf("%d %d %d %d",up,down,left,right);
-    /*for (int i=up;i>=down;i--)  {
+    for (int i=up;i>=down;i--)  {
         b_count=0;
         o_count=0;
         for (int j=left;j<=right;j++)  {
@@ -133,12 +129,12 @@ void life_save_to_rle(LifeState Universe, char* file)  {
         }
         if (i!=down) fprintf(fp,"$");
     }
-    fprintf(fp,"!");*/
+    fprintf(fp,"!");
     fclose(fp);
 }
 bool life_get_cell(LifeState Universe,LifeCell Cell)  {
-    LifeCell *Entity=create_struct(Cell);
-    if (map_find_node(Universe,Entity)!=MAP_EOF)  {
+    LifeCell *Entity=create_struct(Cell.x,Cell.y);
+    if (set_find_node(Universe,Entity)!=SET_EOF)  {
         free(Entity);
         return true;
     }
@@ -170,28 +166,28 @@ int search_neighbor_cells(LifeState Universe,int x, int y)  {
 void life_set_cell(LifeState Universe,LifeCell Cell,bool value)  {
     if (value==true)  {
         if (life_get_cell(Universe,Cell)!=true)  {
-            LifeCell* Entity=create_struct(Cell);
-            map_insert(Universe,Entity,Entity);
+            LifeCell* Entity=create_struct(Cell.x,Cell.y);
+            set_insert(Universe,Entity);
         }
     }
     else  {
         if (life_get_cell(Universe,Cell)==true)  {
-            map_remove(Universe,&Cell);
+            set_remove(Universe,&Cell);
         }
     }
 }
 LifeState life_evolve(LifeState Universe)  {
-    MapNode node=map_first(Universe);
+    SetNode node=set_first(Universe);
     LifeCell Cell,nCell;
-    LifeState Alt_Universe=map_create(compare_structs,free,free);
-    while (node!=MAP_EOF)  {
+    LifeState Alt_Universe=set_create(compare_structs,free);
+    while (node!=SET_EOF)  {
         nCell.x=Cell.x;
         nCell.y=Cell.y;
         char temp;
         temp=search_neighbor_cells(Universe,nCell.x,nCell.y);
         if (temp==2 || temp==3)  { 
-            LifeCell* Entity=create_struct(nCell);
-            map_insert(Alt_Universe,Entity,Entity);
+            LifeCell* Entity=create_struct(nCell.x,nCell.y);
+            set_insert(Alt_Universe,Entity);
         }
         LifeCell s1,s2,s3,s4,s5,s6,s7,s8;
         s1.x=Cell.x+1;
@@ -212,40 +208,40 @@ LifeState life_evolve(LifeState Universe)  {
         s8.y=Cell.y+1;
         temp=search_neighbor_cells(Universe,s1.x,s1.y);
         if (temp==2 || temp==3)  {
-            map_insert(Alt_Universe,create_struct(s1),create_struct(s1));
+            set_insert(Alt_Universe,create_struct(s1.x,s1.y));
         }
         temp=search_neighbor_cells(Universe,s2.x,s2.y);
         if (temp==2 || temp==3)  {
-            map_insert(Alt_Universe,create_struct(s2),create_struct(s2));
+            set_insert(Alt_Universe,create_struct(s1.x,s1.y));
         }
         temp=search_neighbor_cells(Universe,s3.x,s3.y);
         if (temp==2 || temp==3)  {
-            map_insert(Alt_Universe,create_struct(s3),create_struct(s3));
+            set_insert(Alt_Universe,create_struct(s7.x,s7.y));
         }
         temp=search_neighbor_cells(Universe,s4.x,s4.y);
         if (temp==2 || temp==3)  {
-            map_insert(Alt_Universe,create_struct(s4),create_struct(s4));
+            set_insert(Alt_Universe,create_struct(s2.x,s2.y));
         }
         temp=search_neighbor_cells(Universe,s5.x,s5.y);
         if (temp==2 || temp==3)  {
-            map_insert(Alt_Universe,create_struct(s5),create_struct(s5));
+            set_insert(Alt_Universe,create_struct(s3.x,s3.y));
         }
         temp=search_neighbor_cells(Universe,s6.x,s6.y);
         if (temp==2 || temp==3)  {
-            map_insert(Alt_Universe,create_struct(s6),create_struct(s6));
+            set_insert(Alt_Universe,create_struct(s4.x,s4.y));
+        }
+        temp=search_neighbor_cells(Universe,s5.x,s5.y);
+        if (temp==2 || temp==3)  {
+            set_insert(Alt_Universe,create_struct(s6.x,s6.y));
         }
         temp=search_neighbor_cells(Universe,s7.x,s7.y);
         if (temp==2 || temp==3)  {
-            map_insert(Alt_Universe,create_struct(s7),create_struct(s7));
-        }
-        temp=search_neighbor_cells(Universe,s8.x,s8.y);
-        if (temp==2 || temp==3)  {
-            map_insert(Alt_Universe,create_struct(s8),create_struct(s8));
+            set_insert(Alt_Universe,create_struct(s8.x,s8.y));
         }
     }
     life_destroy(Universe);
     return Alt_Universe;
 } 
 void life_destroy(LifeState Universe)  {
-    map_destroy(Universe);
+    set_destroy(Universe);
 }
