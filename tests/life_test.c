@@ -8,6 +8,7 @@ int main(void)  {
     LifeState Universe;
     char *file="tests.txt";
     Universe=life_create_from_rle(file);
+    Universe=life_evolve(Universe);
     life_save_to_rle(Universe,"out_test.txt");
     //printf("size %d",map_size(Universe));
     //life_save_to_rle(Universe,file);

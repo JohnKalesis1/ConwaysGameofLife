@@ -43,7 +43,6 @@ LifeState life_create_from_rle(char* file)  {
             while (temp--!=0)  {
                 Cell.x=x;
                 Cell.y=y;
-                printf("x %d ",x);
                 Entity=create_struct(Cell.x,Cell.y);
                 set_insert(Universe,Entity);
                 x++;
@@ -187,15 +186,13 @@ void life_set_cell(LifeState Universe,LifeCell Cell,bool value)  {
 }
 LifeState life_evolve(LifeState Universe)  {
     SetNode node=set_first(Universe);
-    LifeCell Cell,nCell;
+    LifeCell Cell;
     LifeState Alt_Universe=set_create(compare_structs,free);
     while (node!=SET_EOF)  {
-        nCell.x=Cell.x;
-        nCell.y=Cell.y;
         char temp;
-        temp=search_neighbor_cells(Universe,nCell.x,nCell.y);
+        temp=search_neighbor_cells(Universe,Cell.x,Cell.y);
         if (temp==2 || temp==3)  { 
-            LifeCell* Entity=create_struct(nCell.x,nCell.y);
+            LifeCell* Entity=create_struct(Cell.x,Cell.y);
             set_insert(Alt_Universe,Entity);
         }
         LifeCell s1,s2,s3,s4,s5,s6,s7,s8;
@@ -247,6 +244,7 @@ LifeState life_evolve(LifeState Universe)  {
         if ((temp==2 && life_get_cell(Universe,s8) ) || temp==3)  {
             set_insert(Alt_Universe,create_struct(s8.x,s8.y));
         }
+        node=set_next(Universe,node);
     }
     life_destroy(Universe);
     return Alt_Universe;
