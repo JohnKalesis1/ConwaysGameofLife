@@ -127,6 +127,15 @@ void life_save_to_rle(LifeState Universe, char* file)  {
 
             }
         }
+        if (o_count!=0)  {
+            if (o_count==1)  {
+                fprintf(fp,"o");
+            }
+            else  {
+                fprintf(fp,"%do",o_count);
+            }
+            o_count=0;
+        }
         if (i!=down) fprintf(fp,"$");
     }
     fprintf(fp,"!");
@@ -158,7 +167,7 @@ int search_neighbor_cells(LifeState Universe,int x, int y)  {
     s6.x=x-1;
     s6.y=y;
     s7.x=x-1;
-    s7.y=y;
+    s7.y=y-1;
     s8.x=x-1;
     s8.y=y+1;
     return life_get_cell(Universe,s1)+life_get_cell(Universe,s2)+life_get_cell(Universe,s3)+life_get_cell(Universe,s4)+life_get_cell(Universe,s5)+life_get_cell(Universe,s6)+life_get_cell(Universe,s7)+life_get_cell(Universe,s8);
@@ -203,39 +212,39 @@ LifeState life_evolve(LifeState Universe)  {
         s6.x=Cell.x-1;
         s6.y=Cell.y;
         s7.x=Cell.x-1;
-        s7.y=Cell.y;
+        s7.y=Cell.y-1;
         s8.x=Cell.x-1;
         s8.y=Cell.y+1;
         temp=search_neighbor_cells(Universe,s1.x,s1.y);
-        if (temp==2 || temp==3)  {
+        if ((temp==2 && life_get_cell(Universe,s1) )|| temp==3)  {
             set_insert(Alt_Universe,create_struct(s1.x,s1.y));
         }
         temp=search_neighbor_cells(Universe,s2.x,s2.y);
-        if (temp==2 || temp==3)  {
-            set_insert(Alt_Universe,create_struct(s1.x,s1.y));
-        }
-        temp=search_neighbor_cells(Universe,s3.x,s3.y);
-        if (temp==2 || temp==3)  {
-            set_insert(Alt_Universe,create_struct(s7.x,s7.y));
-        }
-        temp=search_neighbor_cells(Universe,s4.x,s4.y);
-        if (temp==2 || temp==3)  {
+        if ((temp==2 && life_get_cell(Universe,s2) ) || temp==3)  {
             set_insert(Alt_Universe,create_struct(s2.x,s2.y));
         }
-        temp=search_neighbor_cells(Universe,s5.x,s5.y);
-        if (temp==2 || temp==3)  {
+        temp=search_neighbor_cells(Universe,s3.x,s3.y);
+        if ((temp==2 && life_get_cell(Universe,s3) ) || temp==3)  {
             set_insert(Alt_Universe,create_struct(s3.x,s3.y));
         }
-        temp=search_neighbor_cells(Universe,s6.x,s6.y);
-        if (temp==2 || temp==3)  {
+        temp=search_neighbor_cells(Universe,s4.x,s4.y);
+        if ((temp==2 && life_get_cell(Universe,s4) ) || temp==3)  {
             set_insert(Alt_Universe,create_struct(s4.x,s4.y));
         }
         temp=search_neighbor_cells(Universe,s5.x,s5.y);
-        if (temp==2 || temp==3)  {
+        if ((temp==2 && life_get_cell(Universe,s5) ) || temp==3)  {
+            set_insert(Alt_Universe,create_struct(s5.x,s5.y));
+        }
+        temp=search_neighbor_cells(Universe,s6.x,s6.y);
+        if ((temp==2 && life_get_cell(Universe,s6) ) || temp==3)  {
             set_insert(Alt_Universe,create_struct(s6.x,s6.y));
         }
         temp=search_neighbor_cells(Universe,s7.x,s7.y);
-        if (temp==2 || temp==3)  {
+        if ((temp==2 && life_get_cell(Universe,s7) ) || temp==3)  {
+            set_insert(Alt_Universe,create_struct(s7.x,s7.y));
+        }
+        temp=search_neighbor_cells(Universe,s8.x,s8.y);
+        if ((temp==2 && life_get_cell(Universe,s8) ) || temp==3)  {
             set_insert(Alt_Universe,create_struct(s8.x,s8.y));
         }
     }
