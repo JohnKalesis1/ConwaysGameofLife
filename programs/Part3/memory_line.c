@@ -43,5 +43,10 @@ int main(void)  {
             line_counter++;
         }
     }
+    set_destroy(memory);
+    for (i=0;i<1000000;i++)  {
+        free(line_holder[i]);
+    }
+    free(line_holder);
     return 0;
 }
