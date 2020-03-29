@@ -10,6 +10,7 @@ int main(void)  {
     Universe=life_create_from_rle(file);
     Universe=life_evolve(Universe);
     life_save_to_rle(Universe,"out_test.txt");
+    life_destroy(Universe);
     //printf("size %d",map_size(Universe));
     //life_save_to_rle(Universe,file);
    // TEST_CHECK(map_size(Universe)==VALUE);

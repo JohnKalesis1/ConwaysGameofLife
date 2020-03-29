@@ -21,6 +21,7 @@ void pq_sort_vector(Vector vec, CompareFunc compare) {
 		vector_set_at(vec,i,pqueue_max(pqueue));
 		pqueue_remove_max(pqueue);
 	}
+	pqueue_destroy(pqueue);
 	vector_set_destroy_value(vec, old_destroy);
 }
 
@@ -50,5 +51,6 @@ void pq_sort_list(List list, CompareFunc compare) {
 		list_insert_next(list,node,pqueue_max(pqueue));
 		pqueue_remove_max(pqueue);
 	}
+	pqueue_destroy(pqueue);
 	list_set_destroy_value(list, old_destroy);
 }

@@ -7,6 +7,6 @@ struct tree_node  {
 };
 int search_tree(tree_branch ,char*);
 int find_count(tree_branch , char*);
-int add_node_tree(tree_branch *,char*);
+void add_node_tree(tree_branch *,char*);
 void increase_count(tree_branch,char*);
 void destroy_tree(tree_branch);

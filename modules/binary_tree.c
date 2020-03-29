@@ -32,7 +32,7 @@ int find_count(tree_branch root,char* line)  {
         find_count(root->left,line);
     }
 }
-int add_node_tree(tree_branch *root,char*line)  {
+void add_node_tree(tree_branch *root,char*line)  {
     if (*root==NULL)  {
         *root=malloc(sizeof(struct tree_node));
         (*root)->count=0;

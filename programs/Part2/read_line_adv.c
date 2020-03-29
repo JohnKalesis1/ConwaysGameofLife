@@ -2,37 +2,39 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ADTMap.h"
+int compare_strings(Pointer a,Pointer b)  {
+    return  strcmp(a,b);
+}
+int* create_int(int x)  {
+    int *ptr;
+    ptr=malloc(sizeof(int));
+    *ptr=x;
+    return ptr;
+}
+char* create_string(char* line)  {
+    char* str;
+    str=malloc(20*sizeof(char));
+    strcpy(str,line);
+    return str;
+}
 int main(void)  {
-    char line[20],**line_holder;
-    int val,*nval,line_counter=0;;
+    char line[20];
+    int val;
     Map map;
-    line_holder=malloc(1000000*sizeof(char*));
-    nval=malloc(1000000*sizeof(int*));
-    for (val=0;val<1000000;val++)  {
-        line_holder[val]=malloc(20*sizeof(char));
-    }
-    val=0;
-    map=map_create((void*)strcmp,NULL,NULL);
+    map=map_create(compare_strings,free,free);
     while (fgets(line,20,stdin)!=NULL)  {
         if (line[0]!='\n')  {
-            strcpy(line_holder[line_counter],line);
-            if ((map_find_node(map,(void*)line_holder[line_counter]))!=MAP_EOF)  {
-                nval[line_counter]=*(int*)map_node_value(map,map_find_node(map,(void*)line_holder[line_counter]))+1;
-                map_insert(map,(void*)line_holder[line_counter],&nval[line_counter]);
+            if (map_find_node(map,line)!=MAP_EOF)  {
+                val=*(int*)map_node_value(map,map_find_node(map,line))+1;
+                //map_remove(map,line); //δεν ειμαι σιγουρος αν αλλαζει κατι , αλλα το χω βαλει 
+                map_insert(map,create_string(line),create_int(val));
             }
             else  {
                 val=0;
-                map_insert(map,line_holder[line_counter],&val);
+                map_insert(map,create_string(line),create_int(val));
             }
-            printf("%s Line occurence : %d \n",line,* (int*) map_node_value(map,map_find_node(map,(void*)line_holder[line_counter])));
-            line_counter++;
+            printf("%s Line occurence : %d \n",line,* (int*) map_node_value(map,map_find_node(map,line)));
         }
     }
-    free(nval);
-    for (val=0;val<1000000;val++)  {
-        free(line_holder[val]);
-    }
-    free(line_holder);
     map_destroy(map);
-    return 0;
 }
