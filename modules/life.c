@@ -10,6 +10,24 @@ int compare_structs(Pointer a,Pointer b)  {
         return ((LifeCell*) a)->x-((LifeCell*) b)->x;
     }
 }
+int compare_states(Pointer State1,Pointer State2)  {
+    State1=(LifeState) State1;
+    State2=(LifeState) State2;
+    if (set_size(State1)!=set_size(State2))  {
+        return 1;
+    }
+    else  {
+        SetNode node1,node2;
+        node1=set_first(State1);
+        while (node1!=SET_EOF)  {
+            if (set_find_node(State2,node1)==SET_EOF)  {
+                return 1;
+            }
+            node1=set_next(State2,node1); 
+        }
+    }
+    return 0;
+}
 LifeCell* create_struct(int x,int y)  {
     LifeCell* Entity;
     Entity=malloc(sizeof(LifeCell));
@@ -187,9 +205,11 @@ void life_set_cell(LifeState Universe,LifeCell Cell,bool value)  {
 LifeState life_evolve(LifeState Universe)  {
     SetNode node=set_first(Universe);
     LifeCell Cell;
+    Cell=*(LifeCell*) set_node_value(Universe,node);
     LifeState Alt_Universe=set_create(compare_structs,free);
     while (node!=SET_EOF)  {
         char temp;
+        Cell=*(LifeCell*) set_node_value(Universe,node);
         temp=search_neighbor_cells(Universe,Cell.x,Cell.y);
         if (temp==2 || temp==3)  { 
             LifeCell* Entity=create_struct(Cell.x,Cell.y);
@@ -246,9 +266,27 @@ LifeState life_evolve(LifeState Universe)  {
         }
         node=set_next(Universe,node);
     }
-    life_destroy(Universe);
     return Alt_Universe;
 } 
 void life_destroy(LifeState Universe)  {
     set_destroy(Universe);
+}
+List life_evolve_many(LifeState State,int steps ,ListNode *loop)   {
+    List list=list_create(NULL);
+    *loop=NULL;
+    while (steps--!=0)  {
+        State=life_evolve(State);
+        ListNode lnode;
+        lnode=list_first(list);
+        if (lnode!=LIST_BOF)  {
+            while (lnode!=LIST_EOF)  {
+                if (compare_states(list_node_value(list,lnode),State)==0)  {
+                    *loop=lnode;
+                }
+                lnode=list_next(list,lnode);
+            }
+        }
+        list_insert_next(list,lnode,State);
+    }
+    return list;
 }

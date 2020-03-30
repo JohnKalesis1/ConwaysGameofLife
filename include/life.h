@@ -1,5 +1,6 @@
 #include "common_types.h"
 #include "ADTSet.h" 
+#include "ADTList.h"
 typedef struct {
     int x;
     int y;
@@ -12,3 +13,4 @@ bool life_get_cell(LifeState state, LifeCell cell);
 void life_set_cell(LifeState state, LifeCell cell, bool value);
 LifeState life_evolve(LifeState state);
 void life_destroy(LifeState state);
+List life_evolve_many(LifeState ,int,ListNode*);
