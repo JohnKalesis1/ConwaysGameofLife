@@ -11,19 +11,21 @@ int compare_structs(Pointer a,Pointer b)  {
     }
 }
 int compare_states(Pointer State1,Pointer State2)  {
-    State1=(LifeState) State1;
-    State2=(LifeState) State2;
+    State1=(LifeState*) State1;
+    State2=(LifeState*) State2;
     if (set_size(State1)!=set_size(State2))  {
         return 1;
     }
     else  {
-        SetNode node1,node2;
+        SetNode node1;
+        LifeCell Entity;
         node1=set_first(State1);
         while (node1!=SET_EOF)  {
-            if (set_find_node(State2,node1)==SET_EOF)  {
+            Entity=*(LifeCell*)set_node_value(State1,node1);
+            if (set_find_node(State2,&Entity)==SET_EOF)  {
                 return 1;
             }
-            node1=set_next(State2,node1); 
+            node1=set_next(State1,node1); 
         }
     }
     return 0;
@@ -111,49 +113,51 @@ void life_save_to_rle(LifeState Universe, char* file)  {
         }
         Node=set_next(Universe,Node);
     }
-    for (int i=up;i>=down;i--)  {
-        b_count=0;
-        o_count=0;
-        for (int j=left;j<=right;j++)  {
-            LifeCell Cell;
-            Cell.y=i;
-            Cell.x=j;
-            if (life_get_cell(Universe,Cell)==true)  {
-                if (b_count!=0)  {
-                    if (b_count==1)  {
-                        fprintf(fp,"b");
-                    }
-                    else  {
-                        fprintf(fp,"%db",b_count);
-                    }
-                    b_count=0;
-                }
-                o_count++;
-            }
-            else  {
-                if (o_count!=0)  {
-                    if (o_count==1)  {
-                        fprintf(fp,"o");
-                    }
-                    else  {
-                        fprintf(fp,"%do",o_count);
-                    }
-                    o_count=0;
-                }
-                b_count++;
-
-            }
-        }
-        if (o_count!=0)  {
-            if (o_count==1)  {
-                fprintf(fp,"o");
-            }
-            else  {
-                fprintf(fp,"%do",o_count);
-            }
+    if (set_size(Universe)!=0)  {
+        for (int i=up;i>=down;i--)  {
+            b_count=0;
             o_count=0;
+            for (int j=left;j<=right;j++)  {
+                LifeCell Cell;
+                Cell.y=i;
+                Cell.x=j;
+                if (life_get_cell(Universe,Cell)==true)  {
+                    if (b_count!=0)  {
+                        if (b_count==1)  {
+                            fprintf(fp,"b");
+                        }
+                        else  {
+                            fprintf(fp,"%db",b_count);
+                        }
+                        b_count=0;
+                    }
+                    o_count++;
+                }
+                else  {
+                    if (o_count!=0)  {
+                        if (o_count==1)  {
+                            fprintf(fp,"o");
+                        }
+                        else  {
+                            fprintf(fp,"%do",o_count);
+                        }
+                        o_count=0;
+                    }
+                    b_count++;
+
+                }
+            }
+            if (o_count!=0)  {
+                if (o_count==1)  {
+                    fprintf(fp,"o");
+                }
+                else  {
+                    fprintf(fp,"%do",o_count);
+                }
+                o_count=0;
+            }
+            if (i!=down) fprintf(fp,"$");
         }
-        if (i!=down) fprintf(fp,"$");
     }
     fprintf(fp,"!");
     fclose(fp);
@@ -205,7 +209,6 @@ void life_set_cell(LifeState Universe,LifeCell Cell,bool value)  {
 LifeState life_evolve(LifeState Universe)  {
     SetNode node=set_first(Universe);
     LifeCell Cell;
-    Cell=*(LifeCell*) set_node_value(Universe,node);
     LifeState Alt_Universe=set_create(compare_structs,free);
     while (node!=SET_EOF)  {
         char temp;

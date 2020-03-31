@@ -2,21 +2,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "life.h"
-#define VALUE 5
-#define NEWVALUE 5
 int main(void)  {
-    LifeState Universe;
+    LifeState Alt_Universe,Universe;
     List list;
-    int steps=2;
-    ListNode *ptr,lnode;
+    int steps=5;
+    ListNode ptr,lnode;
+    lnode=LIST_BOF;
     char *file="tests.txt";
     Universe=life_create_from_rle(file);
-    //Universe=life_evolve(Universe);
-    list=life_evolve_many(Universe,steps,ptr);
-    lnode=list_first(list);
-    while (steps--!=1)  {
-        lnode=list_next(list,lnode);
+    /*Universe=life_evolve(Universe);
+    life_save_to_rle(Universe,"out_test.txt");*/
+    /*Alt_Universe=life_evolve(Universe);
+    Alt_Universe=life_evolve(Alt_Universe);
+    if (compare_states(Alt_Universe,Universe)==0)  {
+        printf("check\n");
     }
+    if (compare_states(Universe,Universe)==0)  {
+        printf("check finished\n");
+    }*/
+    list=life_evolve_many(Universe,steps,&ptr);
+    lnode=list_first(list);
+    lnode=list_next(list,lnode);
     life_save_to_rle((LifeState)list_node_value(list,lnode),"out_test.txt");
     //life_save_to_rle(Universe,"out_test.txt");
    // TEST_CHECK(map_size(Universe)==VALUE);
