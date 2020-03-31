@@ -5,7 +5,7 @@
 int main(void)  {
     LifeState Alt_Universe,Universe;
     List list;
-    int steps=5;
+    int steps=4;
     ListNode ptr,lnode;
     lnode=LIST_BOF;
     char *file="tests.txt";
@@ -22,7 +22,7 @@ int main(void)  {
     }*/
     list=life_evolve_many(Universe,steps,&ptr);
     lnode=list_first(list);
-    lnode=list_next(list,lnode);
+   // lnode=list_next(list,lnode);lnode=list_next(list,lnode);lnode=list_next(list,lnode);lnode=list_next(list,lnode);
     life_save_to_rle((LifeState)list_node_value(list,lnode),"out_test.txt");
     //life_save_to_rle(Universe,"out_test.txt");
    // TEST_CHECK(map_size(Universe)==VALUE);

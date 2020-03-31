@@ -282,11 +282,16 @@ List life_evolve_many(LifeState State,int steps ,ListNode *loop)   {
         ListNode lnode;
         lnode=list_first(list);
         if (lnode!=LIST_BOF)  {
-            while (lnode!=LIST_EOF)  {
+            while (true)  {
                 if (compare_states(list_node_value(list,lnode),State)==0)  {
                     *loop=lnode;
                 }
-                lnode=list_next(list,lnode);
+                if (list_next(list,lnode)!=LIST_EOF)  {
+                    lnode=list_next(list,lnode);
+                }
+                else  {
+                    break;
+                }
             }
         }
         list_insert_next(list,lnode,State);
