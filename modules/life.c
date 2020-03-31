@@ -51,32 +51,47 @@ LifeState life_create_from_rle(char* file)  {
     fp=fopen(file,"r");
     x=0;
     y=0;
-    temp=1;
+    temp=0;
     while((ch=fgetc(fp))!='!')  {
         if (ch=='b')  {
-            while (temp--!=0)  {
-                x++;
+            x++;
+            if (temp!=0)  {
+                while (temp--!=1)  {
+                    x++;
+                }
+                temp=0;
             }
-            temp=1;
         }
         else if (ch=='o')  {
-            while (temp--!=0)  {
-                Cell.x=x;
-                Cell.y=y;
-                Entity=create_struct(Cell.x,Cell.y);
-                set_insert(Universe,Entity);
-                x++;
+            Cell.x=x;
+            Cell.y=y;
+            Entity=create_struct(Cell.x,Cell.y);
+            set_insert(Universe,Entity);
+            x++;
+            if (temp!=0)  {
+                while (temp--!=1)  {
+                    Cell.x=x;
+                    Cell.y=y;
+                    Entity=create_struct(Cell.x,Cell.y);
+                    set_insert(Universe,Entity);
+                    x++;
+                }
             }
-            temp=1;
+            temp=0;
         }
         else if (ch=='$')  {
             y--;
             x=0;
+            if (temp!=0)  {
+                while (temp--!=1)  {
+                    y--;
+                }
+                temp=0;
+            }
         }
         else  { 
-            if (temp!=1)  {
-                temp=temp*10;
-                temp=temp+ch-'0';
+            if (temp!=0)  {
+                temp=10*temp+ch-'0';
             }
             else  {
                 temp=ch-'0';
@@ -90,7 +105,7 @@ void life_save_to_rle(LifeState Universe, char* file)  {
     FILE *fp;
     SetNode Node;
     LifeCell Cell;
-    int left,up,down,right,x,y,o_count,b_count;
+    int left,up,down,right,o_count,b_count;
     fp=fopen(file,"w");
     left=INT_MAX;
     right=INT_MIN;

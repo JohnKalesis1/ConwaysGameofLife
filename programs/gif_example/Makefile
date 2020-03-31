@@ -1,7 +1,7 @@
 # paths
 LIB = ../../lib
 INCLUDE = ../../include
-
+MODULES=../../modules
 # compiler
 CC = gcc
 
@@ -10,10 +10,10 @@ CFLAGS = -Wall -Werror -g -I$(INCLUDE)
 LDFLAGS = -lm
 
 # Αρχεία .o
-OBJS = gif_example.o $(LIB)/k08.a $(LIB)/libbmp.a
+OBJS = life_gif.o $(MODULES)/life.o $(LIB)/k08.a $(LIB)/libbmp.a
 
 # Το εκτελέσιμο πρόγραμμα
-EXEC = gif_example
+EXEC = life_gif
 
 # Παράμετροι για δοκιμαστική εκτέλεση
 ARGS =
