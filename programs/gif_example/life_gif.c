@@ -1,64 +1,80 @@
-/////////////////////////////////////////////////////////////////////////
-//
-// Παράδειγμα δημιουργίας ενός GIF χρησιμοποιώντας τη βιβλιοθήκη libbmp
-//
-///////////////////////////////////////////////////////////////////////// 
-
 #include "bmp.h"
 #include "gif.h"
 #include "life.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-	// Μεγέθη
-	int size = 128;
+	int top=atoi(argv[2]),down=atoi(argv[4]),left=atoi(argv[3]),right=atoi(argv[5]);
+	int y_size = top-down;
+	int x_size= right-left;
 	int cell_size = 0;
-
-	// Δημιουργία ενός GIF και ενός bitmap στη μνήμη
-	GIF* gif = gif_create(size, size);
-	Bitmap* bitmap = bm_create(size, size);
+	GIF* gif = gif_create(x_size, y_size);
+	Bitmap* bitmap = bm_create(x_size, y_size);
 	LifeState state,Universe;
 	LifeCell Cell;
     List list;
-    ListNode ptr,lnode;
+    ListNode loop,lnode;
     lnode=LIST_BOF;
-	int steps=150;
-    char *file="tests.txt";
+	int steps=atoi(argv[6]);
+	int jump=atoi(argv[8]);
+	int temp=jump;
 	SetNode snode;
-    Universe=life_create_from_rle(file);
-	list=life_evolve_many(Universe,steps,&ptr);
-	// Default καθυστέρηση μεταξύ των frames, σε εκατοστά του δευτερολέπτου
-	gif->default_delay = 10;
-	lnode=list_first(list);
-	// Δημιουργούμε ενα animation με ένα "cell" το οποίο μετακινείται από τη δεξιά-πάνω
-	// γωνία προς την κάτω-αριστερά. Το cell μετακινείται ένα pixel τη φορά, οπότε το animation
-	// θα έχει τόσα frames όσα το μέθεθος της εικόνας.
-	unsigned int palette[] = { 0xFF000000, 0xFFFFFFFF }; // black, white
+    Universe=life_create_from_rle(argv[1]);
+	list=life_evolve_many(Universe,steps,&loop);
+	gif->default_delay = atoi(argv[9]);
+	unsigned int palette[] = { 0xFF000000, 0xFFFFFFFF };
 	gif_set_palette(gif, palette, 2);
+	bm_set_color(bitmap, bm_atoi("black"));
+	bm_clear(bitmap);
+	bm_set_color(bitmap, bm_atoi("white"));
+	snode=set_first(Universe);
+	while (snode!=SET_EOF)  {
+		Cell=*(LifeCell*) set_node_value(Universe,snode);
+		if (Cell.x<right && Cell.x>left && Cell.y<top && Cell.y>down)  {
+			bm_fillrect(bitmap, Cell.x-left, Cell.y-down, Cell.x-left+cell_size, Cell.y-down+cell_size);
+		}
+		snode=set_next(Universe,snode);
+	}
+	gif_add_frame(gif, bitmap);
+	lnode=list_first(list);
+	while (temp--!=1)  {
+		lnode=list_next(list,lnode);
+	}
 	for(int i = 0; i < steps; i++) {
-		// Σε κάθε frame, πρώτα μαυρίζουμε ολόκληρο το bitmap
 		bm_set_color(bitmap, bm_atoi("black"));
 		bm_clear(bitmap);
-
-		// Και μετά ζωγραφίζουμε ένα άσπρο τετράγωνο με αρχή το
-		// σημείο (i,i) και τέλος το (i+cell_size, i+cell_size)
-		
 		bm_set_color(bitmap, bm_atoi("white"));
+		if (lnode==LIST_EOF && loop!=NULL)  {
+			lnode=loop;
+		}
 		state=list_node_value(list,lnode);
 		snode=set_first(state);
 		while (snode!=SET_EOF)  {
 			Cell=*(LifeCell*) set_node_value(state,snode);
-			bm_fillrect(bitmap, Cell.x+size/2, Cell.y+size/2, Cell.x+size/2+cell_size, Cell.y+size/2+cell_size);
+			if (Cell.x<right && Cell.x>left && Cell.y<top && Cell.y>down)  {
+				bm_fillrect(bitmap, Cell.x-left, Cell.y-down, Cell.x-left+cell_size, Cell.y-down+cell_size);
+			}		
 			snode=set_next(state,snode);
 		}
-		lnode=list_next(list,lnode);
-		// Τέλος προσθέτουμε το bitmap σαν frame στο GIF (τα περιεχόμενα αντιγράφονται)
+		temp=jump;
+		while(temp--!=0)  {
+			lnode=list_next(list,lnode);
+			if (lnode==LIST_EOF)  {
+				break;
+			}
+		}
 		gif_add_frame(gif, bitmap);
 	}
-
-	// Αποθήκευση σε αρχείο
-	gif_save(gif, "example.gif");
-
-	// Αποδέσμευση μνήμης
+	life_destroy(Universe);
+	lnode=list_first(list);
+	for (int i=0;i<steps;i++)  {
+		life_destroy(list_node_value(list,lnode));
+		lnode=list_next(list,lnode);
+	}
+	list_destroy(list);
+	gif_save(gif, argv[10]);
 	bm_free(bitmap);
 	gif_free(gif);
 }

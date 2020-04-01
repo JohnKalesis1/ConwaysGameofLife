@@ -51,15 +51,15 @@ LifeState life_create_from_rle(char* file)  {
     fp=fopen(file,"r");
     x=0;
     y=0;
-    temp=0;
+    temp=-1;
     while((ch=fgetc(fp))!='!')  {
         if (ch=='b')  {
             x++;
-            if (temp!=0)  {
-                while (temp--!=1)  {
+            if (temp!=-1)  {
+                while (temp-->1)  {
                     x++;
                 }
-                temp=0;
+                temp=-1;
             }
         }
         else if (ch=='o')  {
@@ -68,8 +68,8 @@ LifeState life_create_from_rle(char* file)  {
             Entity=create_struct(Cell.x,Cell.y);
             set_insert(Universe,Entity);
             x++;
-            if (temp!=0)  {
-                while (temp--!=1)  {
+            if (temp!=-1)  {
+                while (temp-->1)  {
                     Cell.x=x;
                     Cell.y=y;
                     Entity=create_struct(Cell.x,Cell.y);
@@ -77,20 +77,20 @@ LifeState life_create_from_rle(char* file)  {
                     x++;
                 }
             }
-            temp=0;
+            temp=-1;
         }
         else if (ch=='$')  {
             y--;
             x=0;
-            if (temp!=0)  {
-                while (temp--!=1)  {
+            if (temp!=-1)  {
+                while (temp-->1)  {
                     y--;
                 }
-                temp=0;
+                temp=-1;
             }
         }
         else  { 
-            if (temp!=0)  {
+            if (temp!=-1)  {
                 temp=10*temp+ch-'0';
             }
             else  {
@@ -291,6 +291,7 @@ void life_destroy(LifeState Universe)  {
 }
 List life_evolve_many(LifeState State,int steps ,ListNode *loop)   {
     List list=list_create(NULL);
+    char loop_detected=0;
     *loop=NULL;
     while (steps--!=0)  {
         State=life_evolve(State);
@@ -298,10 +299,13 @@ List life_evolve_many(LifeState State,int steps ,ListNode *loop)   {
         lnode=list_first(list);
         if (lnode!=LIST_BOF)  {
             while (true)  {
-                if (compare_states(list_node_value(list,lnode),State)==0)  {
+                /*if (compare_states(list_node_value(list,lnode),State)==0)  {
                     *loop=lnode;
+                    loop_detected=1;
+                    life_destroy(State);
+                    break;
                 }
-                if (list_next(list,lnode)!=LIST_EOF)  {
+                else*/ if (list_next(list,lnode)!=LIST_EOF)  {
                     lnode=list_next(list,lnode);
                 }
                 else  {
@@ -309,7 +313,12 @@ List life_evolve_many(LifeState State,int steps ,ListNode *loop)   {
                 }
             }
         }
-        list_insert_next(list,lnode,State);
+        if (loop_detected==1)  {
+            break;
+        }
+        else  {
+            list_insert_next(list,lnode,State);
+        }
     }
     return list;
 }
