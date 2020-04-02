@@ -4,12 +4,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 int main(int argc, char *argv[]) {
 	int top=atoi(argv[2]),down=atoi(argv[4]),left=atoi(argv[3]),right=atoi(argv[5]);
-	int y_size = top-down;
-	int x_size= right-left;
+	float zoom=atof(argv[7]);
+	int y_size = round(zoom)*(top-down);
+	int x_size= round(zoom)*(right-left);
 	int cell_size = 0;
+	if (zoom>1)  {
+		cell_size=round(zoom);
+	}
+	else  if (zoom<1)  {
+
+	}
 	GIF* gif = gif_create(x_size, y_size);
 	Bitmap* bitmap = bm_create(x_size, y_size);
 	LifeState state,Universe;
@@ -33,7 +41,7 @@ int main(int argc, char *argv[]) {
 	while (snode!=SET_EOF)  {
 		Cell=*(LifeCell*) set_node_value(Universe,snode);
 		if (Cell.x<right && Cell.x>left && Cell.y<top && Cell.y>down)  {
-			bm_fillrect(bitmap, Cell.x-left, Cell.y-down, Cell.x-left+cell_size, Cell.y-down+cell_size);
+			bm_fillrect(bitmap, round(zoom)*abs(Cell.x-left), round(zoom)*abs(top-Cell.y), round(zoom)*abs(Cell.x-left)+cell_size,round(zoom)*abs(top-Cell.y)+cell_size);
 		}
 		snode=set_next(Universe,snode);
 	}
@@ -41,8 +49,11 @@ int main(int argc, char *argv[]) {
 	lnode=list_first(list);
 	while (temp--!=1)  {
 		lnode=list_next(list,lnode);
+		if (lnode==LIST_EOF)  {
+				break;
+			}
 	}
-	for(int i = 0; i < steps; i++) {
+	for(int i = 0; i < steps/jump; i++) {
 		bm_set_color(bitmap, bm_atoi("black"));
 		bm_clear(bitmap);
 		bm_set_color(bitmap, bm_atoi("white"));
@@ -53,8 +64,8 @@ int main(int argc, char *argv[]) {
 		snode=set_first(state);
 		while (snode!=SET_EOF)  {
 			Cell=*(LifeCell*) set_node_value(state,snode);
-			if (Cell.x<right && Cell.x>left && Cell.y<top && Cell.y>down)  {
-				bm_fillrect(bitmap, Cell.x-left, Cell.y-down, Cell.x-left+cell_size, Cell.y-down+cell_size);
+			if (Cell.x<=right && Cell.x>=left && Cell.y<=top && Cell.y>=down)  {
+				bm_fillrect(bitmap, round(zoom)*abs(Cell.x-left), round(zoom)*abs(top-Cell.y), round(zoom)*abs(Cell.x-left)+cell_size,round(zoom)*abs(top-Cell.y)+cell_size);
 			}		
 			snode=set_next(state,snode);
 		}

@@ -299,14 +299,19 @@ List life_evolve_many(LifeState State,int steps ,ListNode *loop)   {
         lnode=list_first(list);
         if (lnode!=LIST_BOF)  {
             while (true)  {
-                /*if (compare_states(list_node_value(list,lnode),State)==0)  {
-                    *loop=lnode;
-                    loop_detected=1;
-                    life_destroy(State);
-                    break;
-                }
-                else*/ if (list_next(list,lnode)!=LIST_EOF)  {
-                    lnode=list_next(list,lnode);
+                if (list_next(list,lnode)!=LIST_EOF)  {
+                    if (compare_states(list_node_value(list,lnode),State)==0)  {
+                        *loop=lnode;
+                        loop_detected=1;
+                        life_destroy(State);
+                        break;
+                    }
+                    if (list_next(list,lnode)!=LIST_EOF)  {
+                        lnode=list_next(list,lnode);
+                    }
+                    else  {
+                        break;
+                    }
                 }
                 else  {
                     break;
