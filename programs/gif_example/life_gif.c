@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 	int x_size= round(zoom)*(right-left);
 	int cell_size = 0;
 	if (zoom>1)  {
-		cell_size=round(zoom);
+		cell_size=round(zoom)-1;
 	}
 	else  if (zoom<1)  {
 
