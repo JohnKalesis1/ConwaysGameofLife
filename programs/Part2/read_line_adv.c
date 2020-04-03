@@ -21,20 +21,19 @@ int main(void)  {
     char line[20];
     int val;
     Map map;
-    map=map_create(compare_strings,free,free);
+    map=map_create(compare_strings,free,free);  // δημιουργια χαρτη που αντιστοιχει μια συμβολοσειρα σε εναν αριθμο
     while (fgets(line,20,stdin)!=NULL)  {
         if (line[0]!='\n')  {
-            if (map_find_node(map,line)!=MAP_EOF)  {
+            if (map_find_node(map,line)!=MAP_EOF)  {  // αν εχει κατοχωρυθει ηδη η γραμμη στο μαπ , αυξανουμε τον μετρητη της κατα 1
                 val=*(int*)map_node_value(map,map_find_node(map,line))+1;
-                //map_remove(map,line); //δεν ειμαι σιγουρος αν αλλαζει κατι , αλλα το χω βαλει 
                 map_insert(map,create_string(line),create_int(val));
             }
             else  {
                 val=0;
-                map_insert(map,create_string(line),create_int(val));
+                map_insert(map,create_string(line),create_int(val)); //αλλιως την καταχωρουμε στο μαπ με αρχικη τιμη 0
             }
-            printf("%s Line occurence : %d \n",line,* (int*) map_node_value(map,map_find_node(map,line)));
+            printf("%s Line occurence : %d \n",line,* (int*) map_node_value(map,map_find_node(map,line))); // εκτυπωνουμε ποσες φορες εχει εμφανιστει στο παρελθον 
         }
     }
-    map_destroy(map);
+    map_destroy(map); //καταστρεφουμε το μαπ και αποδεσμευουμε ολη τη δεσμευμενη μνημη 
 }
