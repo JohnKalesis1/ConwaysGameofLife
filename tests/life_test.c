@@ -18,7 +18,7 @@ int main(void)  {
     life_save_to_rle(Universe,file);
     fp=fopen(file,"r");
     fscanf(fp,"%s",text);
-    if (strcmp(text,"bo2bo$o$o3bo$4o!")!=0)  {
+    if (strcmp(text,"bo2bo$o$o3bo$4o!")!=0)  {  //με εναν ελεγχο ελεγχω την λειτουργια και των δυο συναρτησεων
         printf("Error in function\n");
     }
     else  {
