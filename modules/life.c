@@ -101,8 +101,8 @@ LifeState life_create_from_rle(char* file)  {
     fclose(fp);
     return Universe;
 }
-void life_save_to_rle(LifeState Universe, char* file)  {
-    FILE *fp;
+void life_save_to_rle(LifeState Universe, char* file)  { // σημειωση αν σε μια γραμμη υπαρχουν μονο νεκρα κελια απο ενα σημειο και μετα
+    FILE *fp;         // δεν εχει νοημα να τα γραψουμε στο rle format οποτε το 3o5b$5b3o! γινεται 3o$5b3o!
     SetNode Node;
     LifeCell Cell;
     int left,up,down,right,o_count,b_count;
@@ -150,7 +150,7 @@ void life_save_to_rle(LifeState Universe, char* file)  {
                 }
                 else  {
                     if (o_count!=0)  {
-                        if (o_count==1)  { //οτνα διαβαζουμε νεα νεκρο τοτε καταχωρουμε τα ζωντανα
+                        if (o_count==1)  { //οταν διαβαζουμε νεα νεκρο τοτε καταχωρουμε τα ζωντανα
                             fprintf(fp,"o");
                         }
                         else  {
