@@ -73,6 +73,16 @@ int main(void)  {
         LifeState U=list_node_value(list,lnode);
         if (compare_states(Universe,U)==0)  {
             printf("Passed \n");
+            Universe=life_evolve(Universe);
+            life_save_to_rle(Universe,file);
+            fp=fopen(file,"r");
+            fscanf(fp,"%s",text);
+            if (strcmp("o$o$o!",text)==0)  { //δουλευει η εξελιξη σε επομενο σταδιο 
+                printf("Passed \n");
+            }
+            else  {
+                printf("Error \n");
+            }
         }
         else  {
             printf("Error \n");
