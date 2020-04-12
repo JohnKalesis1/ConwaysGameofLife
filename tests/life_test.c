@@ -1,4 +1,3 @@
-//#include "acutest.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "life.h"
@@ -29,8 +28,3 @@ int main(void)  {
     //Universe=life_evolve(Universe);
     //TEST_CHECK(map_size(Universe)==NEWVALUE);
 }
-/*TEST_LIST = {
-	{ "test_life_test", life_test },
-
-	{ NULL} // τερματίζουμε τη λίστα με NULL
-};*/
