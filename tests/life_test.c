@@ -98,6 +98,22 @@ int main(void)  {
     }
     else  {
         printf("Passed \n");
+        list=life_evolve_many(Universe,5,&node);
+        ListNode lnode=list_first(list);
+        int i=3;
+        while (i--!=0)  {
+            lnode=list_next(list,lnode);
+        }
+        LifeState U=list_node_value(list,lnode);
+        life_save_to_rle(U,file);
+        fp=fopen(file,"r");
+        fscanf(fp,"%s",text);
+        if (strcmp("bo$2bo$3o!",text)==0 && compare_states(U,Universe)!=0)  { //το glider εχει μετακινηθει επιτυχως στο χωρο 
+            printf("Passed \n");                    //και εχει παρει την ιδια μορφη (στο rle φαινεται αυτο) οπως θα επρεπε
+        }
+        else  {
+            printf("Error \n");
+        }
         
     }
     fclose(fp);
