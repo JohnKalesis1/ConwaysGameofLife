@@ -2,8 +2,6 @@
 
 ## 2020 Project 1
 
-Εκφώνηση: https://k08.chatzi.org/projects/project1/
-
 
 ### Προσωπικά στοιχεία
 
